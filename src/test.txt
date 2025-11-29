@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure simple pour stocker les usines
+typedef struct Factory {
+    char id[128];
+    double cap_max;
+    struct Factory *next;
+} Factory;
+
+// Ajouter en début de liste
+Factory* add_factory(Factory *head, const char *id, double cap) {
+    Factory *f = malloc(sizeof(Factory));
+    strcpy(f->id, id);
+    f->cap_max = cap;
+    f->next = head;
+    return f;
+}
+
+int main(void) {
+    FILE *f = fopen("../data/test.dat", "r");
+    if (!f) {
+        perror("fopen");
+        return 1;
+    }
+
+    Factory *list = NULL;
+    char line[2048];
+
+    while (fgets(line, sizeof(line), f)) {
+
+        char tmp[2048];
+        strcpy(tmp, line);
+
+        char *col1  = strtok(tmp, ";\n");
+        char *amont = strtok(NULL, ";\n");
+        char *aval  = strtok(NULL, ";\n");
+        char *vol   = strtok(NULL, ";\n");
+        char *fuite = strtok(NULL, ";\n");
+
+        if (!col1 || !amont || !aval || !vol || !fuite) continue; //vérifie que les champs découpés par strtok existent vraiment.
+
+        // Détection d'une USINE
+        if (strcmp(col1, "-") == 0   &&  strcmp(aval, "-") == 0  &&  strcmp(fuite, "-") == 0 )
+        {
+            double cap = atof(vol);
+            list = add_factory(list, amont, cap);
+        }
+    }
+
+    fclose(f);
+
+    // Affichage des usines détectées
+    printf("=== FACTORIES ===\n");
+    for (Factory *p = list; p != NULL; p = p->next) {
+        printf("ID: %s | Capacity Max: %.2f\n", p->id, p->cap_max);
+    }
+
+    return 0;
+}
