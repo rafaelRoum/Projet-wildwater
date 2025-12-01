@@ -16,5 +16,6 @@ typedef struct FactoryNode {
 FactoryNode* insert_factory(FactoryNode *node, const char *id, double cap_max);
 FactoryNode* search_factory(FactoryNode *node, const char *id);
 void print_reverse_inorder(FactoryNode *root);
+void prf(FactoryNode *root, FILE *fp);
 
 #endif
