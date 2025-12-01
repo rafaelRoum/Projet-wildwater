@@ -94,7 +94,7 @@ FactoryNode* search_factory(FactoryNode *node, const char *id) {
     if (!node){
         //printf("NULL\n"); // ICI §§§
         return NULL;
-    } 
+    }
     int cmp = strcmp(id, node->id);
     if (cmp == 0) return node;
     if (cmp < 0) return search_factory(node->left, id);
@@ -106,7 +106,18 @@ void print_reverse_inorder(FactoryNode *root) {
     print_reverse_inorder(root->right);
     printf("%s | max=%.2f | src=%.2f | real=%.2f | overload : %d\n",
            root->id, root->cap_max, root->vol_src, root->vol_real,root->overload);
+
     print_reverse_inorder(root->left);
+}
+void prf(FactoryNode *root, FILE *fp) { // je suis laaaa
+    if (!root) return;
+
+    prf(root->right, fp);
+
+    fprintf(fp, "%s;%.2f;%.2f;%.2f;%d\n",
+            root->id, root->cap_max, root->vol_src, root->vol_real, root->overload);
+
+    prf(root->left, fp);
 }
 
 // -------- PASS 4 : Déterminer PASS / FAIL pour chaque usine --------
@@ -122,4 +133,3 @@ void check_factories(FactoryNode *root) {
 
     check_factories(root->right);
 }
-
