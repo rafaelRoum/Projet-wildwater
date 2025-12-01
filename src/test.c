@@ -15,7 +15,8 @@ int is_source(char *col1, char *aval) {
 
 int main(void) {
 
-    FILE *f = fopen("../data/test.dat", "r");
+    FILE *f = fopen("../data/wildwater_v3.dat", "r");
+    FILE *g = fopen("../data/factories.dat", "w");
     if (!f) { perror("fopen"); return 1; }
 
     FactoryNode *root = NULL;
@@ -79,5 +80,8 @@ int main(void) {
 
     printf("================================ USINES ================================\n");
     print_reverse_inorder(root);
+    prf(root, g);
+    fclose(g);
+
     return 0;
 }
