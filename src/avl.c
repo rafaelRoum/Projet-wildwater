@@ -1,99 +1,104 @@
+#define _DEFAULT_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "avl.h"
 
-int height(FactoryNode *n) { return n ? n->height : 0; }
-int maxi(int a, int b) { return (a > b) ? a : b; }
-
-FactoryNode* new_factory_node(const char *id) {
-    FactoryNode *node = malloc(sizeof(FactoryNode));
-    if (!node) exit(1);
-    
-    strcpy(node->id, id);
-    node->cap_max = 0;
-    node->vol_src = 0;
-    node->vol_real = 0;
-    node->left = node->right = NULL;
-    node->height = 1;
-    return node;
+int max(int a, int b) {
+    return (a > b) ? a : b;
 }
 
-// AVL Rotations (kept from base code)
-FactoryNode* right_rotate(FactoryNode *y) {
-    FactoryNode *x = y->left;
-    FactoryNode *T2 = x->right;
-    x->right = y;
-    y->left = T2;
-    y->height = maxi(height(y->left), height(y->right)) + 1;
-    x->height = maxi(height(x->left), height(x->right)) + 1;
+int hauteur(avl *n) {
+    if (n == NULL) return 0;
+    return n->hauteur;
+}
+
+avl* creerAVL(char *id, void *donnee) {
+    avl *n = malloc(sizeof(avl));
+    if (n == NULL) exit(1);
+    n->id = strdup(id);
+    n->hauteur = 1;
+    n->gauche = NULL;
+    n->droite = NULL;
+    n->donnee = donnee;
+    return n;
+}
+
+avl* rotationDroite(avl *y) {
+    avl *x = y->gauche;
+    avl *T2 = x->droite;
+    x->droite = y;
+    y->gauche = T2;
+    y->hauteur = max(hauteur(y->gauche), hauteur(y->droite)) + 1;
+    x->hauteur = max(hauteur(x->gauche), hauteur(x->droite)) + 1;
     return x;
 }
 
-FactoryNode* left_rotate(FactoryNode *x) {
-    FactoryNode *y = x->right;
-    FactoryNode *T2 = y->left;
-    y->left = x;
-    x->right = T2;
-    x->height = maxi(height(x->left), height(x->right)) + 1;
-    y->height = maxi(height(y->left), height(y->right)) + 1;
+avl* rotationGauche(avl *x) {
+    avl *y = x->droite;
+    avl *T2 = y->gauche;
+    y->gauche = x;
+    x->droite = T2;
+    x->hauteur = max(hauteur(x->gauche), hauteur(x->droite)) + 1;
+    y->hauteur = max(hauteur(y->gauche), hauteur(y->droite)) + 1;
     return y;
 }
 
-int get_balance(FactoryNode *n) { return n ? height(n->left) - height(n->right) : 0; }
+int obtenirEquilibre(avl *n) {
+    if (n == NULL) return 0;
+    return hauteur(n->gauche) - hauteur(n->droite);
+}
 
-// Insert node into AVL
-FactoryNode* insert_node(FactoryNode *node, const char *id, FactoryNode **inserted_node) {
-    if (!node) {
-        FactoryNode *new = new_factory_node(id);
-        if (inserted_node) *inserted_node = new;
-        return new;
+avl* insererAVL(avl *noeud, char *id, void *donnee) {
+    if (noeud == NULL) {
+        return creerAVL(id, donnee);
     }
 
-    int cmp = strcmp(id, node->id);
+    int cmp = strcmp(id, noeud->id);
     if (cmp < 0)
-        node->left = insert_node(node->left, id, inserted_node);
+        noeud->gauche = insererAVL(noeud->gauche, id, donnee);
     else if (cmp > 0)
-        node->right = insert_node(node->right, id, inserted_node);
+        noeud->droite = insererAVL(noeud->droite, id, donnee);
     else {
-        if (inserted_node) *inserted_node = node;
-        return node;
+        return noeud;
     }
 
-    node->height = 1 + maxi(height(node->left), height(node->right));
-    int balance = get_balance(node);
+    noeud->hauteur = 1 + max(hauteur(noeud->gauche), hauteur(noeud->droite));
+    int balance = obtenirEquilibre(noeud);
 
-    // 4 case rebalancing logic
-    if (balance > 1 && strcmp(id, node->left->id) < 0) return right_rotate(node);
-    if (balance < -1 && strcmp(id, node->right->id) > 0) return left_rotate(node);
-    if (balance > 1 && strcmp(id, node->left->id) > 0) { node->left = left_rotate(node->left); return right_rotate(node); }
-    if (balance < -1 && strcmp(id, node->right->id) < 0) { node->right = right_rotate(node->right); return left_rotate(node); }
-    
-    return node;
-}
+    if (balance > 1 && strcmp(id, noeud->gauche->id) < 0)
+        return rotationDroite(noeud);
 
-FactoryNode* search_node(FactoryNode *node, const char *id) {
-    if (!node) return NULL;
-    int cmp = strcmp(id, node->id);
-    if (cmp == 0) return node;
-    if (cmp < 0) return search_node(node->left, id);
-    return search_node(node->right, id);
-}
+    if (balance < -1 && strcmp(id, noeud->droite->id) > 0)
+        return rotationGauche(noeud);
 
-// In-order traversal (Reverse alphabetical for output CSV)
-void print_reverse_inorder(FactoryNode *root, FILE *fp) {
-    if (!root) return;
-    print_reverse_inorder(root->right, fp);
-    
-    // Only print nodes that represent an active station/factory
-    if (root->cap_max > 0 || root->vol_src > 0) {
-        fprintf(fp, "%s;%.2f;%.2f;%.2f\n", 
-                root->id, root->cap_max, root->vol_src, root->vol_real);
+    if (balance > 1 && strcmp(id, noeud->gauche->id) > 0) {
+        noeud->gauche = rotationGauche(noeud->gauche);
+        return rotationDroite(noeud);
     }
-    
-    print_reverse_inorder(root->left, fp);
+
+    if (balance < -1 && strcmp(id, noeud->droite->id) < 0) {
+        noeud->droite = rotationDroite(noeud->droite);
+        return rotationGauche(noeud);
+    }
+
+    return noeud;
 }
 
-void free_avl_tree(FactoryNode *root) {
-    if (!root) return;
-    free_avl_tree(root->left);
-    free_avl_tree(root->right);
-    free(root);
+avl* rechercherAVL(avl *noeud, char *id) {
+    if (noeud == NULL) return NULL;
+    int cmp = strcmp(id, noeud->id);
+    if (cmp == 0) return noeud;
+    if (cmp < 0) return rechercherAVL(noeud->gauche, id);
+    return rechercherAVL(noeud->droite, id);
+}
+
+void libererAVL(avl *noeud) {
+    if (noeud != NULL) {
+        libererAVL(noeud->gauche);
+        libererAVL(noeud->droite);
+        free(noeud->id);
+        free(noeud->donnee);
+        free(noeud);
+    }
 }

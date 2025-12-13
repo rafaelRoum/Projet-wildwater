@@ -1,27 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef AVL_H
+#define AVL_H
 
-// Node structure used for AVL balancing (stores Factory/Station data)
-typedef struct FactoryNode {
-    char id[128];
-    
-    // Histo Data
-    double cap_max;
-    double vol_src;  
-    double vol_real; 
-    
-    // AVL Data
-    int height;
-    struct FactoryNode *left;
-    struct FactoryNode *right;
-} FactoryNode;
+typedef struct avl {
+    char* id;
+    int hauteur;
+    struct avl* gauche;
+    struct avl* droite;
+    void* donnee;
+} avl;
 
-// Prototypes for AVL functions
-
-FactoryNode* insert_node(FactoryNode *node, const char *id, FactoryNode **inserted_node);
-FactoryNode* search_node(FactoryNode *node, const char *id);
-void print_reverse_inorder(FactoryNode *root, FILE *fp);
-void free_avl_tree(FactoryNode *root);
+avl* creerAVL(char *id, void *donnee);
+avl* insererAVL(avl *noeud, char *id, void *donnee);
+avl* rechercherAVL(avl *noeud, char *id);
+void libererAVL(avl *noeud);
+int hauteur(avl *n);
+int max(int a, int b);
 
 #endif

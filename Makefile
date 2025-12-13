@@ -1,27 +1,27 @@
+# Compilateur
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -O2
-LDFLAGS = -lm
-EXEC = c-water
 
-# Source and Object files definitions
-SRC_DIR = src
-OBJ_DIR = .
-SRC_FILES = main.c avl.c leaks.c
-OBJ_FILES = $(patsubst %.c, %.o, $(SRC_FILES))
+# Options : -Isrc pour trouver les headers
+CFLAGS = -Isrc -O3
 
-# Main target (linking step)
+# Exécutable
+EXEC = c-wildwater
+
+# Sources
+SRC = src/main.c src/avl.c src/histo.c src/fuites.c
+OBJ = $(SRC:.c=.o)
+
 all: $(EXEC)
 
-$(EXEC): $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+$(EXEC): $(OBJ)
+	$(CC) $(OBJ) -o $(EXEC)
 
-# Rule to compile objects in the src/ directory
-%.o: $(SRC_DIR)/%.c $(SRC_DIR)/avl.h $(SRC_DIR)/leaks.h
+src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Phony targets
 clean:
-	rm -f *.o $(EXEC) $(OBJ_DIR)/*.o
-	rm -f data/*.dat graphs/*.png
+	rm -f src/*.o $(EXEC) graphs/* sortie/*
 
-.PHONY: all clean
+re: clean all
+
+.PHONY: all clean re
