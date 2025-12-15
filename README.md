@@ -33,8 +33,8 @@ Pour fonctionner, ce projet nécessite un environnement Linux (ou WSL sous Windo
 ## 🚀 Installation
 
 #### Clonez le dépôt :
-#####  git clone https://github.com/rafaelRoum/Projet-wildwater.git
-#####  cd ./chemin/Projet-wildwater
+#####    git clone https://github.com/rafaelRoum/Projet-wildwater.git
+#####    cd ./chemin/Projet-wildwater
 
 #### Donnez les droits d'exécution au script principal :
  ##### chmod +x myScript.sh
