@@ -45,7 +45,7 @@ Options disponibles :
 - max : Trie selon la capacité maximale des stations.
 - src : Trie selon le volume de source (captage).
 - real : Trie selon le volume réellement traité.
-- all : Génère un fichier de données complet (Bonus).
+- all : Génère un fichier de données complet 
 
 ##### Exemple :
     ./myScript.sh data.csv histo max
@@ -66,18 +66,18 @@ Pour supprimer les fihciers de sortie (graphs et sortie):
 
 ## 📊 Résultats et Sorties
 
-    Histogrammes : Les images sont sauvegardées dans graphs/ (ex: histo_max_top10.png).
+- Histogrammes : Les images sont sauvegardées dans graphs/ (ex: histo_max_top10.png).
 
-    Log des fuites : Les résultats sont ajoutés au fichier sortie/fuites.log.
+- Log des fuites : Les résultats sont ajoutés au fichier sortie/fuites.log.
 
-    Temps d'exécution : La durée totale du traitement est affichée en millisecondes à la fin de chaque commande.
+- Temps d'exécution : La durée totale du traitement est affichée en millisecondes à la fin de chaque commande.
 
 ## 👥 Auteurs
 
-    Rafael Roumiantsev
+ Rafael Roumiantsev
 
-    Neira Bahri
+ Neira Bahri
 
-    Yassine Dhahak
+ Yassine Dhahak
     
 Projet de preing 2
