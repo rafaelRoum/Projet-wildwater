@@ -20,8 +20,9 @@ src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f src/*.o $(EXEC) graphs/* sortie/*
+	rm -f src/*.o $(EXEC) 
 
-re: clean all
+clear:	
+	rm -f graphs/* sortie/*
 
-.PHONY: all clean re
+.PHONY: all clean clear
