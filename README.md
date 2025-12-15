@@ -27,8 +27,8 @@ Pour fonctionner, ce projet nécessite un environnement Linux (ou WSL sous Windo
 
 #### Installation des dépendances (LINUX) :
 
-sudo apt update
-sudo apt install build-essential gnuplot-qt
+    sudo apt update
+    sudo apt install build-essential gnuplot-qt
 
 ## 🚀 Installation
 
