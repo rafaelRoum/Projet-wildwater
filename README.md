@@ -2,8 +2,8 @@
 
 Ce projet consiste à développer un outil d'analyse et de synthèse de données pour un système de distribution d'eau, entièrement codé en langage C et piloté par un script Shell.
 
-L'objectif est de traiter un volume massif de données (CSV) pour en extraire des statistiques clés :
-Histogrammes : Classement des stations (usines, stations de traitement) selon leurs capacités ou volumes.
+L'objectif est de traiter un volume massif de données (CSV) pour en extraire des statistiques clés :                                                                                                                                                      
+Histogrammes : Classement des stations (usines, stations de traitement) selon leurs capacités ou volumes.                                                                                                                                                   
 Détection de fuites : Analyse du réseau (modélisé par un graphe) pour calculer les pertes d'eau en aval d'une usine spécifique.
 
 ## 📁 Contenu du Projet
@@ -48,11 +48,11 @@ Options disponibles :
 - all : Génère un fichier de données complet 
 
 ##### Exemple :
-    ./myScript.sh data.csv histo max
+    ./script.sh data.csv histo max
 
 #### 2. Calculer les Fuites (fuites)
 
-    ./myScript.sh data.csv fuites "Identifiant_Usine"
+    ./script.sh data.csv fuites "Identifiant_Usine"
     
 #### 3. Nettoyage
 
