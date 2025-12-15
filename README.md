@@ -1,15 +1,15 @@
 # 🌊 C-WildWater Project
 
 Ce projet consiste à développer un outil d'analyse et de synthèse de données pour un système de distribution d'eau, entièrement codé en langage C et piloté par un script Shell.
+
 L'objectif est de traiter un volume massif de données (CSV) pour en extraire des statistiques clés :
     Histogrammes : Classement des stations (usines, stations de traitement) selon leurs capacités ou volumes.
     Détection de fuites : Analyse du réseau (modélisé par un graphe) pour calculer les pertes d'eau en aval d'une usine spécifique.
 
-Le projet met en pratique des structures de données avancées (Arbres AVL, Graphes, Listes chaînées) et l'automatisation via Shell et Makefile.
-
 ## 📁 Contenu du Projet
 
 Le répertoire est structuré comme suit :
+
     src/ : Contient tous les fichiers sources (.c) et les en-têtes (.h).
     data.csv : Le fichier de données brut (entrée du programme).
     script.sh : Le script d'automatisation principal (lance la compilation, le traitement et la génération de graphiques).
@@ -32,12 +32,10 @@ Pour fonctionner, ce projet nécessite un environnement Linux (ou WSL sous Windo
 
 ## 🚀 Installation
 
-#### Clonez le dépôt :
-#####    git clone https://github.com/rafaelRoum/Projet-wildwater.git
-#####    cd ./chemin/Projet-wildwater
-
-#### Donnez les droits d'exécution au script principal :
- ##### chmod +x myScript.sh
+#### Clonez le dépôt, aller dans le répertoire et donner les droits d'execution au script :
+    git clone https://github.com/rafaelRoum/Projet-wildwater.git
+    cd ./chemin/Projet-wildwater
+    chmod +x myScript.sh
 
 ## ⚙️ Utilisation
 
@@ -50,25 +48,21 @@ Options disponibles :
     all : Génère un fichier de données complet (Bonus).
 
 ##### Exemple :
-##### ./myScript.sh data.csv histo max
+    ./myScript.sh data.csv histo max
 
 #### 2. Calculer les Fuites (fuites)
 
-##### ./myScript.sh data.csv fuites "Identifiant_Usine"
-
-##### Exemple :
-
-##### ./myScript.sh data.csv fuites "Plant #42"
-
+    ./myScript.sh data.csv fuites "Identifiant_Usine"
+    
 #### 3. Nettoyage
 
 Pour supprimer les fichiers temporaires de compilation (objets et exécutable) :
 
-###### make clean
+    make clean
 
 Pour supprimer les fihciers de sortie (graphs et sortie):
 
-##### make clear
+    make clear
 
 ## 📊 Résultats et Sorties
 
