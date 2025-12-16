@@ -35,7 +35,7 @@ Pour fonctionner, ce projet nécessite un environnement Linux (ou WSL sous Windo
 #### Clonez le dépôt, aller dans le répertoire et donner les droits d'execution au script :
     git clone https://github.com/rafaelRoum/Projet-wildwater.git
     cd ./chemin/Projet-wildwater
-    chmod +x myScript.sh
+    chmod +x script.sh
 
 ## ⚙️ Utilisation
 
@@ -48,11 +48,11 @@ Options disponibles :
 - all : Génère un fichier de données complet 
 
 ##### Exemple :
-    ./script.sh data.csv histo max
+    ./script.sh <nom_fichiers> histo max
 
 #### 2. Calculer les Fuites (fuites)
 
-    ./script.sh data.csv fuites "Identifiant_Usine"
+    ./script.sh <fichiers_entree> fuites "Identifiant_Usine"
     
 #### 3. Nettoyage
 
