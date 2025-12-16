@@ -12,7 +12,7 @@ void parcoursInverse(avl *noeud, FILE *sortie, char *mode) {
 
     DonneesHisto *d = (DonneesHisto*)noeud->donnee;
     
-    // MODIFICATION ICI : On utilise double pour la précision M.m3
+    // On utilise double pour la précision M.m3
     double valeur = 0.0; 
 
     if (strcmp(mode, "max") == 0) valeur = d->capacite;
@@ -25,7 +25,6 @@ void parcoursInverse(avl *noeud, FILE *sortie, char *mode) {
     }
     // Gestion des cas classiques avec filtre > 0
     else if (valeur > 0.0) {
-        // %f pour les flottants (Millions de m3)
         fprintf(sortie, "%s;%f\n", noeud->id, valeur);
     }
 
@@ -47,6 +46,7 @@ int traiter_histo(FILE *fichier, char *type) {
 
         if (!col2 || !col3 || !col4) continue;
 
+        // CAS 1 : Définition de l'usine (Ligne type : -;Usine;-;Capacité;-)
         if (strcmp(col1, "-") == 0 && strcmp(col3, "-") == 0) {
             if (strcmp(col4, "-") != 0) {
                 avl *n = rechercherAVL(racine, col2);
@@ -59,7 +59,10 @@ int traiter_histo(FILE *fichier, char *type) {
                 d->capacite = atof(col4);
             }
         }
-        else if (strcmp(col1, "-") == 0 && strcmp(col3, "-") != 0) {
+        // CAS 2 : Lien Source -> Usine (Ligne type : -;Source;Usine;Volume;Fuite)
+        // CORRECTION ICI : On ajoute la vérification que col4 n'est PAS un tiret
+        // Cela permet d'exclure les lignes Usine -> Stockage (qui ont col4 == "-")
+        else if (strcmp(col1, "-") == 0 && strcmp(col3, "-") != 0 && strcmp(col4, "-") != 0) {
             avl *n = rechercherAVL(racine, col3);
             if (!n) {
                 DonneesHisto *data = calloc(1, sizeof(DonneesHisto));
