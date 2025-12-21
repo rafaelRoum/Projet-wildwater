@@ -3,6 +3,10 @@
 #include "histo.h"
 #include "fuites.h"
 
+/* Point d'entrée du programme. 
+   Vérifie que les arguments sont corrects (fichier CSV, type de commande, option).
+   Ouvre le fichier de données et délègue le traitement au module correspondant ("histo" ou "fuites").
+   Retourne 0 si tout s'est bien passé, sinon un code d'erreur non nul. */
 int main(int argc, char *argv[]) {
     if (argc < 4) return 1;
 
