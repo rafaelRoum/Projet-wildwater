@@ -4,15 +4,18 @@
 #include <string.h>
 #include "avl.h"
 
+/* Retourne le plus grand des deux entiers fournis. */
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
+/* Renvoie la hauteur du nœud. Si le nœud est NULL (arbre vide), retourne 0. */
 int hauteur(avl *n) {
     if (n == NULL) return 0;
     return n->hauteur;
 }
 
+/* Crée un nouveau nœud AVL, alloue la mémoire, copie l'identifiant et initialise les pointeurs. */
 avl* creerAVL(char *id, void *donnee) {
     avl *n = malloc(sizeof(avl));
     if (n == NULL) exit(1);
@@ -24,6 +27,7 @@ avl* creerAVL(char *id, void *donnee) {
     return n;
 }
 
+/* Effectue une rotation simple vers la droite pour rééquilibrer l'arbre. Met à jour les hauteurs des nœuds concernés. */
 avl* rotationDroite(avl *y) {
     avl *x = y->gauche;
     avl *T2 = x->droite;
@@ -34,6 +38,7 @@ avl* rotationDroite(avl *y) {
     return x;
 }
 
+/* Effectue une rotation simple vers la gauche pour rééquilibrer l'arbre. Met à jour les hauteurs des nœuds concernés. */
 avl* rotationGauche(avl *x) {
     avl *y = x->droite;
     avl *T2 = y->gauche;
@@ -44,11 +49,13 @@ avl* rotationGauche(avl *x) {
     return y;
 }
 
+/* Calcule le facteur d'équilibre d'un nœud (différence entre la hauteur gauche et la hauteur droite). */
 int obtenirEquilibre(avl *n) {
     if (n == NULL) return 0;
     return hauteur(n->gauche) - hauteur(n->droite);
 }
 
+/* Insère un élément dans l'arbre AVL, met à jour la hauteur et effectue les rotations nécessaires pour garder l'arbre équilibré. */
 avl* insererAVL(avl *noeud, char *id, void *donnee) {
     if (noeud == NULL) {
         return creerAVL(id, donnee);
@@ -85,6 +92,7 @@ avl* insererAVL(avl *noeud, char *id, void *donnee) {
     return noeud;
 }
 
+/* Recherche récursivement un nœud dans l'arbre par son identifiant (id). Retourne NULL si non trouvé. */
 avl* rechercherAVL(avl *noeud, char *id) {
     if (noeud == NULL) return NULL;
     int cmp = strcmp(id, noeud->id);
@@ -93,6 +101,7 @@ avl* rechercherAVL(avl *noeud, char *id) {
     return rechercherAVL(noeud->droite, id);
 }
 
+/* Libère récursivement la mémoire de tout l'arbre (nœuds, identifiants et données). */
 void libererAVL(avl *noeud) {
     if (noeud != NULL) {
         libererAVL(noeud->gauche);
