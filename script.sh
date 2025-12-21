@@ -1,64 +1,83 @@
-#!/bin/bash
+# Ce script vérifie les arguments entrés, compile le programme C, 
+# appelle le programme C (histo ou fuites), génère les fichiers et graphiques,
+# mesure le temps total d'exécution
 
-# --- 1. Démarrage du chronomètre (Nanosecondes) ---
-start_time=$(date +%s%3N)
 
-# Fonction pour gérer la fin du script (calcul du temps)
+# Démarrage du chronomètre en milisecondes
+start_time=$(date +%s%3N) # Prend en compte le temps actuel
+
+# Fonction appelée à la fin du script dont le but est d'afficher le temps total d'exécution du programme
 finish() {
     end_time=$(date +%s%3N)
     duration=$((end_time - start_time))
     echo "Durée totale : ${duration} ms"
 }
 
-# On s'assure que 'finish' est appelé même en cas d'erreur (exit)
+# "Trap" demande à bash d'exécuter la fonction finish 
+# Garantir l'exécution de 'finish' même en cas d'erreur (exit)
 trap finish EXIT
 
-# --- 2. Vérification des arguments ---
-# Usage attendu : ./myScript.sh data.csv commande [option]
-if [ $# -lt 2 ]; then
+# Vérification des arguments 
+# Usage attendu :
+# ./script.sh data.csv histo <max|src|real|all>
+# ./script.sh data.csv fuites <ID_USINE>
+if [ $# -lt 2 ]; then # $# = nombre total d'arguments passés au script
     echo "Erreur : Arguments insuffisants."
     echo "Usage : $0 <chemin_data.csv> histo <max|src|real|all>"
     echo "Usage : $0 <chemin_data.csv> leaks <Identifiant_Usine>"
     exit 1
 fi
 
-FICHIER_DATA="$1"
-COMMANDE="$2"
-OPTION="$3"
+# Récupération des arguments
 
+FICHIER_DATA="$1" # $1 = fichier de données
+COMMANDE="$2" # $2 = Commande (histo ou fuites)
+OPTION="$3" # $3 = Pption (type histo ou ID usine)
+
+# On vérifie que le fichier de données existe bien 
 if [ ! -f "$FICHIER_DATA" ]; then
     echo "Erreur : Le fichier '$FICHIER_DATA' est introuvable."
     exit 1
 fi
 
-# Création des dossiers
-mkdir -p sortie
-mkdir -p graphs
+# Création des dossiers de sortie 
+mkdir -p sortie # fichiers  .dat, logs
+mkdir -p graphs # images PNG 
 
-# --- 3. Compilation ---
+# Compilation du programme C
 EXECUTABLE="./c-wildwater"
+
+# Dans le cas où l'exécutable n'existe pas, on lance le make
 if [ ! -f "$EXECUTABLE" ]; then
     echo "Compilation en cours..."
     make
+
+    # $? contient le code de retour de make 
+    # Différent de 0 = erreur 
     if [ $? -ne 0 ]; then
         echo "Erreur : Échec de la compilation."
         exit 1
     fi
 fi
 
-# --- 4. Traitement ---
-
+# Traitement selon la commande 
+# Mode histogramme
 if [ "$COMMANDE" = "histo" ]; then
+
+    # vérification de l'option histo
     if [[ "$OPTION" != "max" && "$OPTION" != "src" && "$OPTION" != "real" && "$OPTION" != "all" ]]; then
         echo "Erreur : Option invalide pour histo (max, src, real, all)."
         exit 1
     fi
 
-    # Appel C
+    # Appel du programme C pour généré le fichier .dat
+    # Le programme C lit le fichier de données et génère un fichier histo <option>.dat
     $EXECUTABLE "$FICHIER_DATA" histo "$OPTION"
     if [ $? -ne 0 ]; then exit 1; fi
 
     NOM_FICHIER_DAT="histo_$OPTION.dat"
+
+    # Vérification et déplacement du fichier généré
     if [ -f "$NOM_FICHIER_DAT" ]; then
         mv "$NOM_FICHIER_DAT" "sortie/$NOM_FICHIER_DAT"
     else
@@ -66,18 +85,21 @@ if [ "$COMMANDE" = "histo" ]; then
         exit 1
     fi
 
-    # --- GNUPLOT : 10 plus grands & 50 plus petits ---
+    # Génération des graphiques  
     if [ "$OPTION" != "all" ]; then
         echo "Génération des graphiques..."
         INPUT="sortie/$NOM_FICHIER_DAT"
         
-        # 1. Préparer les données
-        # Trier décroissant (Top 10)
+        # Suppresion de l'en-tête puis tri des données
+        # Top 10 des plus grandes valeurs 
+        # Trier décroissant 
         tail -n +2 "$INPUT" | sort -t';' -k2nr | head -n 10 > sortie/top10.dat
-        # Trier croissant (Top 50 min)
+        
+        # Top 50 des plus petites valeurs 
+        # Trier croissant 
         tail -n +2 "$INPUT" | sort -t';' -k2n | head -n 50 > sortie/min50.dat
 
-        # 2. Graphique 1 : 10 Plus Grandes
+        # Graphique 1 : 10 Plus Grandes usines
         gnuplot -e "
             set terminal png size 1000,600;
             set output 'graphs/histo_${OPTION}_top10.png';
@@ -91,7 +113,7 @@ if [ "$COMMANDE" = "histo" ]; then
             plot 'sortie/top10.dat' using 2:xtic(1) title 'Volume' lc rgb '#2E86C1';
         "
 
-        # 3. Graphique 2 : 50 Plus Petites
+        # Graphique 2 : 50 Plus Petites usines 
         gnuplot -e "
             set terminal png size 1200,600;
             set output 'graphs/histo_${OPTION}_min50.png';
@@ -105,24 +127,31 @@ if [ "$COMMANDE" = "histo" ]; then
             plot 'sortie/min50.dat' using 2:xtic(1) title 'Volume' lc rgb '#E74C3C';
         "
 
-        # Nettoyage temporaire
+        # Nettoyage temporaire des fichiers 
         rm sortie/top10.dat sortie/min50.dat
     fi
 
 elif [ "$COMMANDE" = "fuites" ]; then
+
+    # Vérification de l'identifiant
     if [ -z "$OPTION" ]; then
         echo "Erreur : Il faut l'ID de l'usine."
         exit 1
     fi
 
+    # Appel du programme C qui calcul des fuites 
     $EXECUTABLE "$FICHIER_DATA" fuites "$OPTION"
     
-    # Gestion de l'historique dans sortie/
+    # Gestion du fichier de sortie généré par le C
     if [ -f "fuites_output.dat" ]; then
         LOG="sortie/fuites.log"
+
+        # Création de l'en-tête si le fichier n'existe pas encore 
         if [ ! -f "$LOG" ]; then
              head -n 1 "fuites_output.dat" > "$LOG"
         fi
+
+        # Ajout du dernier résultat
         tail -n 1 "fuites_output.dat" >> "$LOG"
         rm "fuites_output.dat"
     else
@@ -131,6 +160,7 @@ elif [ "$COMMANDE" = "fuites" ]; then
         echo "Aucune fuite détectée ou usine introuvable."
     fi
 
+# Commmande invalide
 else
     echo "Erreur : Commande '$COMMANDE' inconnue."
     exit 1
