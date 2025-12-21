@@ -1,6 +1,9 @@
 #ifndef AVL_H
 #define AVL_H
 
+/* Structure représentant un nœud de l'arbre AVL.
+   Contient un identifiant (clé), la hauteur du nœud,
+   les pointeurs vers les fils gauche/droit et un pointeur générique vers les données. */
 typedef struct avl {
     char* id;
     int hauteur;
@@ -9,11 +12,22 @@ typedef struct avl {
     void* donnee;
 } avl;
 
+/* Alloue et initialise un nouveau nœud AVL avec un identifiant et une donnée. */
 avl* creerAVL(char *id, void *donnee);
+
+/* Insère un nouvel élément dans l'arbre AVL en maintenant l'équilibre (rotations si nécessaire). */
 avl* insererAVL(avl *noeud, char *id, void *donnee);
+
+/* Recherche un nœud spécifique dans l'arbre grâce à son identifiant. */
 avl* rechercherAVL(avl *noeud, char *id);
+
+/* Libère la mémoire allouée pour l'arbre complet (nœuds, clés et données). */
 void libererAVL(avl *noeud);
+
+/* Retourne la hauteur d'un nœud donné (0 si le nœud est NULL). */
 int hauteur(avl *n);
+
+/* Fonction utilitaire retournant le maximum entre deux entiers. */
 int max(int a, int b);
 
 #endif
