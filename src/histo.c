@@ -5,6 +5,8 @@
 #include "histo.h"
 #include "avl.h"
 
+/* Parcourt l'arbre AVL de manière récursive inverse (Droite -> Nœud -> Gauche) pour obtenir un ordre décroissant. 
+   Sélectionne la donnée appropriée selon le mode ("max", "src", "real" ou "all") et l'écrit dans le fichier de sortie. */
 void parcoursInverse(avl *noeud, FILE *sortie, char *mode) {
     if (noeud == NULL) return;
 
@@ -31,6 +33,9 @@ void parcoursInverse(avl *noeud, FILE *sortie, char *mode) {
     parcoursInverse(noeud->gauche, sortie, mode);
 }
 
+/* Fonction principale du module : lit le fichier CSV ligne par ligne pour remplir l'AVL avec les données des usines.
+   Gère deux cas : la définition de la capacité de l'usine et l'accumulation des volumes (source -> usine) en appliquant les fuites.
+   Génère ensuite le fichier de sortie spécifique demandé. */
 int traiter_histo(FILE *fichier, char *type) {
     char ligne[1024];
     avl *racine = NULL;
