@@ -2,8 +2,7 @@
 #define AVL_H
 
 /* Structure représentant un nœud de l'arbre AVL.
-   Contient un identifiant (clé), la hauteur du nœud,
-   les pointeurs vers les fils gauche/droit et un pointeur générique vers les données. */
+Le pointeur générique donnee contiendra les données pour les fuites ou pour les histogrammes*/
 typedef struct avl {
     char* id;
     int hauteur;

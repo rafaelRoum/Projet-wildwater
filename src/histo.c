@@ -14,7 +14,7 @@ void parcoursInverse(avl *noeud, FILE *sortie, char *mode) {
 
     DonneesHisto *d = (DonneesHisto*)noeud->donnee;
     
-    // On utilise double pour la précision M.m3
+
     double valeur = 0.0; 
 
     if (strcmp(mode, "max") == 0) valeur = d->capacite;

@@ -6,22 +6,20 @@
 # Démarrage du chronomètre en milisecondes
 start_time=$(date +%s%3N) # Prend en compte le temps actuel
 
-# Fonction appelée à la fin du script dont le but est d'afficher le temps total d'exécution du programme
+# Fonction pour temps d'execution
 finish() {
     end_time=$(date +%s%3N)
     duration=$((end_time - start_time))
     echo "Durée totale : ${duration} ms"
 }
 
-# "Trap" demande à bash d'exécuter la fonction finish 
+
 # Garantir l'exécution de 'finish' même en cas d'erreur (exit)
 trap finish EXIT
 
 # Vérification des arguments 
-# Usage attendu :
-# ./script.sh data.csv histo <max|src|real|all>
-# ./script.sh data.csv fuites <ID_USINE>
-if [ $# -lt 2 ]; then # $# = nombre total d'arguments passés au script
+
+if [ $# -lt 2 ]; then 
     echo "Erreur : Arguments insuffisants."
     echo "Usage : $0 <chemin_data.csv> histo <max|src|real|all>"
     echo "Usage : $0 <chemin_data.csv> leaks <Identifiant_Usine>"
@@ -32,7 +30,7 @@ fi
 
 FICHIER_DATA="$1" # $1 = fichier de données
 COMMANDE="$2" # $2 = Commande (histo ou fuites)
-OPTION="$3" # $3 = Pption (type histo ou ID usine)
+OPTION="$3" # $3 = Option (type histo ou ID usine)
 
 # On vérifie que le fichier de données existe bien 
 if [ ! -f "$FICHIER_DATA" ]; then
@@ -40,9 +38,9 @@ if [ ! -f "$FICHIER_DATA" ]; then
     exit 1
 fi
 
-# Création des dossiers de sortie 
-mkdir -p sortie # fichiers  .dat, logs
-mkdir -p graphs # images PNG 
+# Création des dossiers de sortie si inexistants
+mkdir -p sortie 
+mkdir -p graphs
 
 # Compilation du programme C
 EXECUTABLE="./c-wildwater"
@@ -52,8 +50,8 @@ if [ ! -f "$EXECUTABLE" ]; then
     echo "Compilation en cours..."
     make
 
-    # $? contient le code de retour de make 
-    # Différent de 0 = erreur 
+
+    # Vérification erreur compilation
     if [ $? -ne 0 ]; then
         echo "Erreur : Échec de la compilation."
         exit 1
@@ -70,8 +68,7 @@ if [ "$COMMANDE" = "histo" ]; then
         exit 1
     fi
 
-    # Appel du programme C pour généré le fichier .dat
-    # Le programme C lit le fichier de données et génère un fichier histo <option>.dat
+    # Appel du programme C
     $EXECUTABLE "$FICHIER_DATA" histo "$OPTION"
     if [ $? -ne 0 ]; then exit 1; fi
 
@@ -130,7 +127,7 @@ if [ "$COMMANDE" = "histo" ]; then
         # Nettoyage temporaire des fichiers 
         rm sortie/top10.dat sortie/min50.dat
     fi
-
+#Mode fuites
 elif [ "$COMMANDE" = "fuites" ]; then
 
     # Vérification de l'identifiant
@@ -166,4 +163,4 @@ else
     exit 1
 fi
 
-# Le 'trap finish EXIT' gérera l'affichage du temps ici
+# Le 'trap finish EXIT' gérera l'affichage du temps ici 

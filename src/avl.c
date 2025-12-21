@@ -4,6 +4,12 @@
 #include <string.h>
 #include "avl.h"
 
+
+// Fonction de bases pour AVL
+
+
+
+
 /* Retourne le plus grand des deux entiers fournis. */
 int max(int a, int b) {
     return (a > b) ? a : b;

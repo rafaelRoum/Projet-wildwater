@@ -46,7 +46,7 @@ int traiter_fuites(FILE *fichier, char *id_usine) {
     char ligne[1024];
     avl *index = NULL;
 
-    // 1. PHASE DE CHARGEMENT (C'est ça qui est long, et c'est inévitable)
+
     while (fgets(ligne, 1024, fichier)) {
         ligne[strcspn(ligne, "\r\n")] = 0;
 
@@ -84,29 +84,25 @@ int traiter_fuites(FILE *fichier, char *id_usine) {
         p->premier_fils = e;
     }
 
-    // 2. VERIFICATION ET ECRITURE DU RESULTAT
+
     FILE *sortie = fopen("fuites_output.dat", "w");
     if (!sortie) {
         libererAVL(index);
         return 1;
     }
 
-    // On écrit l'en-tête standard
     fprintf(sortie, "Identifiant;Volume perdu (M.m3/an)\n");
 
     avl *depart = rechercherAVL(index, id_usine);
 
     if (!depart) {
-        // CAS : USINE INTROUVABLE -> ON ECRIT -1 ET ON S'ARRETE LA
-        // Pas de calcul, on sort direct.
+        // CAS : USINE INTROUVABLE 
         fprintf(sortie, "%s;-1\n", id_usine);
         printf("Usine introuvable : %s\n", id_usine);
     } 
     else {
-        // CAS : USINE TROUVEE -> ON CALCULE
-        // Note: Le sujet ne précise pas le volume d'entrée initial, 
-        // on garde 1 million ou la valeur par défaut pour les tests.
-        double pertes = calculer_pertes((NoeudGraphe*)depart->donnee, 1000000.0); // Base arbitraire pour tester %
+        // CAS : USINE TROUVEE 
+        double pertes = calculer_pertes((NoeudGraphe*)depart->donnee, 1000000.0); 
         fprintf(sortie, "%s;%f\n", id_usine, pertes);
     }
 
